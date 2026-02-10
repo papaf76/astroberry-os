@@ -1,0 +1,34 @@
+name: Build PHD2 Log Viewer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get PHD2 Log Viewer Sources
+        uses: actions/checkout@v6
+        with:
+          repository: 'agalasso/phdlogview'
+          ref: refs/tags/v0.6.4
+          path: 'phdlogview'
+
+      - name: Build PHD2 Log Viewer Packages
+        run: |
+          rm -rf build/deb_phdlogview && mkdir -p build/deb_phdlogview && \
+          cp -r phdlogview/* build/deb_phdlogview/ && \
+          cd build/deb_phdlogview && \
+          echo "DEB_CMAKE_EXTRA_FLAGS += -DHAVE_WXFB:BOOL=FALSE" >> debian/rules && \
+          echo "export DEB_BUILD_OPTIONS := parallel=\$(shell nproc)" >> debian/rules && \
+          fakeroot debian/rules binary && \
+          ls ../phdlogview*.deb

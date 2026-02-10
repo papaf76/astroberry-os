@@ -1,0 +1,28 @@
+name: Build GSC
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get GSC Sources
+        run: |
+          if [ ! -d gsc ]; then git clone --depth 1 --branch master https://git.launchpad.net/gsc; fi
+
+      - name: Build GSC Packages
+        run: |
+          rm -rf build/deb_gsc && mkdir -p build/deb_gsc && \
+          cp -r gsc/* build/deb_gsc/ && cd build/deb_gsc && \
+          chmod 755 debian/rules && fakeroot debian/rules binary && \
+          ls ../gsc*.deb

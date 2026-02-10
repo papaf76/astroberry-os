@@ -1,0 +1,71 @@
+FROM arm64v8/debian:trixie
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN cat /etc/os-release
+
+WORKDIR /work
+
+# Core tools
+RUN apt-get update && apt-get -y upgrade && apt-get install -y \
+    curl git cmake extra-cmake-modules build-essential zlib1g-dev \
+    cdbs debhelper pkg-kde-tools reprepro sshpass
+
+# Add raspberry pi repository
+RUN curl -L https://archive.raspberrypi.com/debian/raspberrypi.gpg.key | tee /etc/apt/trusted.gpg.d/raspi.asc && \
+    echo "deb http://archive.raspberrypi.com/debian/ trixie main" > /etc/apt/sources.list.d/raspi.list && \
+    apt-get update
+
+# Core development packages
+RUN apt-get install -y \
+    zlib1g-dev libcfitsio-dev libnova-dev libusb-1.0-0-dev libcurl4-gnutls-dev \
+    libgsl-dev libjpeg-dev libfftw3-dev libev-dev zlib1g-dev
+
+# Google Test
+RUN git clone https://github.com/google/googletest.git googletest && \
+    cd googletest && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON . && \
+    make && \
+    make install && \
+    rm -rf /tmp/googletest
+
+# INDI dependencies
+RUN apt-get install -y \
+    libftdi-dev libftdi1-dev libavcodec-dev libavdevice-dev libavformat-dev libswscale-dev \
+    libgps-dev libraw-dev libdc1394-dev libgphoto2-dev libtiff-dev libahp-xc-dev \
+    libboost-dev libboost-regex-dev libboost-program-options-dev librtlsdr-dev liblimesuite-dev \
+    libzmq3-dev liburjtag-dev libdfu-dev fxload libgpiod-dev libpigpiod-if2-1t64 libpigpiod-if-dev \
+    libglib2.0-dev libaravis-dev libcamera-dev libnutclient-dev libsystemd-dev systemd-dev
+
+# INDI libcamera dependencies
+RUN apt-get install -y rpicam-apps librpicam-app-dev
+
+# StellarSolver dependencies
+RUN apt-get install -y \
+    qtbase5-dev wcslib-dev
+
+# Kstars dependencies
+RUN apt-get install -y \
+    libkf5plotting-dev libqt5svg5-dev libkf5xmlgui-dev libkf5kio-dev libkf5newstuff-dev libkf5doctools-dev \
+    libkf5notifications-dev qtdeclarative5-dev libkf5crash-dev libkf5notifyconfig-dev libqt5websockets5-dev libqt5datavisualization5-dev \
+    kinit-dev libeigen3-dev gettext xplanet xplanet-images qt5keychain-dev libsecret-1-dev libxisf-dev liberfa-dev breeze-icon-theme
+
+# PHD2 dependencies
+RUN apt-get install -y \
+    libwxgtk3.2-dev wx-common wx3.2-i18n libx11-dev libopencv-dev
+
+# PHD log viewer dependencies
+RUN apt-get install -y \
+libwxgtk3.2-dev libwxgtk-media3.2-dev
+
+# OACAPTURE dependencies
+RUN apt-get install -y \
+    qtbase5-dev qtbase5-dev-tools qttools5-dev-tools libjpeg-dev libaravis-dev libsdl1.2-dev \
+    libudev-dev libhidapi-dev libv4l-dev libbz2-dev libuvc-dev
+
+# ASTROBERRY dependencies
+RUN apt-get install -y \
+    libgpiod-dev libmosquitto-dev
+
+# Clean up
+RUN apt-get clean

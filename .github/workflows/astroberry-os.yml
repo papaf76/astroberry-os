@@ -1,0 +1,30 @@
+name: Astroberry OS meta-package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get the sources
+        uses: actions/checkout@v6
+        with:
+          repository: 'astroberry-official/astroberry-os'
+          path: 'astroberry-os'
+
+      - name: Build Astroberry OS meta-packages
+        run: |
+          rm -rf build/deb_astroberry-os && mkdir -p build/deb_astroberry-os && \
+          cp -r astroberry-os/* build/deb_astroberry-os/ && cd build/deb_astroberry-os && \
+          fakeroot debian/rules binary && \
+          ls ../astroberry-os-*.deb

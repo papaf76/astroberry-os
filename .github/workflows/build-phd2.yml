@@ -1,0 +1,44 @@
+name: Build PHD2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get PHD2 Sources
+        uses: actions/checkout@v6
+        with:
+          repository: 'OpenPHDGuiding/phd2'
+          ref: refs/tags/v2.6.14
+          path: 'phd2'
+
+      - name: Install INDI Core
+        run: |
+          dpkg -i build/indi-bin_*_arm64.deb build/libindi1_*_arm64.deb build/libindi-data_*_all.deb build/libindi-dev_*_arm64.deb
+
+      - name: Install INDI 3rd Party Libraries
+        run: |
+          dpkg -i --force-overwrite $(ls build/lib* | grep -v dbgsym | grep -v libindi | grep -v dev) && \
+          dpkg -i --force-overwrite $(ls build/lib* | grep -v dbgsym | grep -v libindi | grep dev)
+
+      - name: Build PHD2 Packages
+        run: |
+          rm -rf build/deb_phd2 && mkdir -p build/deb_phd2 && \
+          cp -r phd2/* build/deb_phd2/ && \
+          sed -i "s/-DOPENSOURCE_ONLY=1/-DOPENSOURCE_ONLY=0/g" build/deb_phd2/debian/rules && \
+          sed -i "/dh_auto_configure --/s/$/ -DFETCHCONTENT_FULLY_DISCONNECTED=0/" build/deb_phd2/debian/rules && \
+          cd build/deb_phd2 && \
+          echo "export DEB_BUILD_OPTIONS := parallel=\$(shell nproc)" >> debian/rules && \
+          fakeroot debian/rules binary && \
+          ls ../phd2*.deb

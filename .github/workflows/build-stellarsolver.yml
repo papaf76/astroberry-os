@@ -1,0 +1,33 @@
+name: Build StellarSolver
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get StellarSolver Sources
+        uses: actions/checkout@v6
+        with:
+          repository: 'rlancaste/stellarsolver'
+          ref: refs/tags/2.7
+          path: 'stellarsolver'
+
+      - name: Build StellarSolver Packages
+        run: |
+          rm -rf build/deb_stellarsolver && mkdir -p build/deb_stellarsolver && \
+          cp -r stellarsolver/* build/deb_stellarsolver/ && \
+          cd build/deb_stellarsolver && \
+          echo "export DEB_BUILD_OPTIONS := parallel=\$(shell nproc)" >> debian/rules && \
+          fakeroot debian/rules binary && \
+          ls ../libstellarsolver*.deb

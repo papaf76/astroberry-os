@@ -1,0 +1,29 @@
+name: Build INDI Core
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get INDI Sources
+        uses: actions/checkout@v6
+        with:
+          repository: 'indilib/indi'
+          ref: refs/tags/v2.1.7
+          path: 'indi'
+
+      - name: Build INDI Core Packages
+        run: |
+          indi/scripts/indi-core-deb.sh && \
+          ls ../indi-bin*.deb && ls ../libindi*.deb
