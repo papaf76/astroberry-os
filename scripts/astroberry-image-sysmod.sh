@@ -517,10 +517,10 @@ WIFIKEY="$(echo WVhOMGNtOWlaWEp5ZVFvPQo= | base64 -d | base64 -d)"
 cat <<EOF > /etc/NetworkManager/system-connections/Hotspot.nmconnection
 [connection]
 id=Hotspot
-uuid=54825a4f-17c5-4111-adcd-3c08c0d189f7
+uuid=54825a4f-17c5-4111-dcda-3c08c0d189f7
 type=wifi
 interface-name=wlan0
-timestamp=1770433545
+autoconnect-priority=-900
 autoconnect=true
 
 [wifi]
@@ -528,10 +528,7 @@ mode=ap
 ssid=astroberry
 
 [wifi-security]
-group=ccmp;
 key-mgmt=wpa-psk
-pairwise=ccmp;
-proto=rsn;
 psk=$WIFIKEY
 
 [ipv4]
@@ -539,9 +536,7 @@ method=shared
 
 [ipv6]
 addr-gen-mode=default
-method=ignore
-
-[proxy]
+method=shared
 EOF
 chmod 600 /etc/NetworkManager/system-connections/Hotspot.nmconnection
 
