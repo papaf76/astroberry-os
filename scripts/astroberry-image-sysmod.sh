@@ -104,6 +104,16 @@ polkit.addRule(function(action, subject) {
 });
 EOF
 
+# Enable members of plugdev group to mount and eject external drives
+cat <<EOF > /etc/polkit-1/rules.d/10-file-manager.rules
+polkit.addRule(function(action, subject) {
+  if (action.id.startsWith("org.freedesktop.udisks2") &&
+       subject.isInGroup("plugdev")) {
+    return polkit.Result.YES;
+  }
+});
+EOF
+
 # Disable graphical login
 update-rc.d lightdm disable
 
@@ -161,8 +171,8 @@ After=multi-user.target
 Type=simple
 User=astroberry
 Environment=HOME=/home/astroberry
-ExecStart=vncserver -display :70 -desktop astroberry -SecurityTypes None -NeverShared -DisconnectClients -localhost yes -UseIPv6 no -geometry 1920x1080 -depth 24 -fg -xstartup startxfce4
-ExecStop=vncserver -kill
+ExecStart=tigervncserver -display :70 -desktop astroberry -SecurityTypes None -NeverShared -DisconnectClients -localhost yes -UseIPv6 no -geometry 1920x1080 -depth 24 -fg -xstartup startxfce4
+ExecStop=tigervncserver -kill
 Restart=on-failure
 RestartSec=1
 
@@ -507,10 +517,10 @@ WIFIKEY="$(echo WVhOMGNtOWlaWEp5ZVFvPQo= | base64 -d | base64 -d)"
 cat <<EOF > /etc/NetworkManager/system-connections/Hotspot.nmconnection
 [connection]
 id=Hotspot
-uuid=54825a4f-17c5-4111-adcd-3c08c0d189f7
+uuid=54825a4f-17c5-4111-dcda-3c08c0d189f7
 type=wifi
 interface-name=wlan0
-timestamp=1770433545
+autoconnect-priority=-900
 autoconnect=true
 
 [wifi]
@@ -518,10 +528,7 @@ mode=ap
 ssid=astroberry
 
 [wifi-security]
-group=ccmp;
 key-mgmt=wpa-psk
-pairwise=ccmp;
-proto=rsn;
 psk=$WIFIKEY
 
 [ipv4]
@@ -529,9 +536,7 @@ method=shared
 
 [ipv6]
 addr-gen-mode=default
-method=ignore
-
-[proxy]
+method=shared
 EOF
 chmod 600 /etc/NetworkManager/system-connections/Hotspot.nmconnection
 
