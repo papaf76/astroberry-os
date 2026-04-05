@@ -26,6 +26,7 @@ jobs:
       - name: Fix INDI 3rd Party Sources
         run: |
           for i in $(ls indi-3rdparty/debian/*/rules);do chmod 755 $i; done
+          sed -i "s/^lib/usr\/lib/g" indi-3rdparty/debian/lib*/*.install
 
       - name: Install INDI Core
         run: |
