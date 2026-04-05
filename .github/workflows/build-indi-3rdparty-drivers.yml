@@ -27,6 +27,7 @@ jobs:
         run: |
           for i in $(ls indi-3rdparty/debian/*/rules);do chmod 755 $i;done
           sed -i "s/^lib/usr\/lib/g" indi-3rdparty/debian/indi-*/*.install
+          sed -i "s/\/lib\/udev\/rules.d/\/usr\/lib\/udev\/rules.d/g" indi-3rdparty/indi-openogma/CMakeLists.txt
 
       - name: Install INDI Core
         run: |
