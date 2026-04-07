@@ -88,7 +88,7 @@ mount --rbind /dev/pts "$ROOTFS/dev/pts"
 # Prepare build scripts
 mkdir -p "$ROOTFS/tmp/astroberry-mods"
 cp "$WDIR/astroberry-image-sysmod.sh" "$ROOTFS/tmp/astroberry-mods/"
-cp "build/whl_astroberry-manager/dist/astroberry_manager-1.0-py3-none-any.whl" "$ROOTFS/tmp/astroberry-mods/"
+cp "build/whl_astroberry-manager/dist/astroberry_manager-1.1-py3-none-any.whl" "$ROOTFS/tmp/astroberry-mods/"
 chmod 755 "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
 
 # Run system mods in chroot environment

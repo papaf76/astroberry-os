@@ -121,7 +121,7 @@ update-rc.d lightdm disable
 apt-get install -y python3 python-is-python3 python3-pip python3-venv \
   libcairo2-dev libgirepository-2.0-dev libdbus-1-dev libcfitsio-dev libnova-dev libindi-dev \
   tigervnc-standalone-server gpsd gpsd-tools apparmor-utils
-python -m venv /opt/astroberry-manager && /opt/astroberry-manager/bin/pip install /tmp/astroberry-mods/astroberry_manager-1.0-py3-none-any.whl
+python -m venv /opt/astroberry-manager && /opt/astroberry-manager/bin/pip install /tmp/astroberry-mods/astroberry_manager-1.1-py3-none-any.whl
 #python -m venv /opt/astroberry-manager && /opt/astroberry-manager/bin/pip install astroberry_manager@git+https://github.com/astroberry-official/astroberry-manager
 
 # Install reverse proxy
