@@ -28,6 +28,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
-          file: docker/Dockerfile.${{ matrix.container }}
+          file: docker/Dockerfile.${{ matrix.container }}.${{ vars.ARCH }}
           push: true
-          tags: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.container }}-${{ vars.ARCH }}
