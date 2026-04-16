@@ -13,7 +13,7 @@ jobs:
         container: ["debian-trixie"]
 
     container:
-      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}-${{ vars.ARCH }}
 
     steps:
       - name: Get PHD2 Log Viewer Sources
