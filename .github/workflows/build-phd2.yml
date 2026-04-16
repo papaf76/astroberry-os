@@ -25,7 +25,7 @@ jobs:
 
       - name: Install INDI Core
         run: |
-          dpkg -i build/indi-bin_*_-${{ vars.ARCH }}.deb build/libindi1_*_-${{ vars.ARCH }}.deb build/libindi-data_*_all.deb build/libindi-dev_*_-${{ vars.ARCH }}.deb
+          dpkg -i build/indi-bin_*_${{ vars.ARCH }}.deb build/libindi1_*_${{ vars.ARCH }}.deb build/libindi-data_*_all.deb build/libindi-dev_*_${{ vars.ARCH }}.deb
 
       - name: Install INDI 3rd Party Libraries
         run: |
