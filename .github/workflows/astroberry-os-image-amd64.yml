@@ -38,6 +38,7 @@ jobs:
 
       - name: Build Astroberry OS image
         run: |
+          chmod +x astroberry-os/scripts-amd64/astroberry-image-build.sh
           astroberry-os/scripts-amd64/astroberry-image-build.sh "$OUTPUT_IMAGE"
           ls -alh "$OUTPUT_IMAGE"
 
