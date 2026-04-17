@@ -25,6 +25,7 @@ jobs:
           #repository: astroberry-official/astroberry-os
           repository: papaf76/astroberry-os
           path: astroberry-os
+          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Install required tools
         run: |
