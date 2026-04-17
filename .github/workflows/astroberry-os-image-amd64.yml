@@ -1,0 +1,52 @@
+name: Astroberry OS image (amd64)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}-${{ vars.ARCH }}
+      volumes:
+        - /dev:/dev
+      options: --privileged
+
+    steps:
+      - name: Get sources
+        uses: actions/checkout@v6
+        with:
+          repository: astroberry-official/astroberry-os
+          path: astroberry-os
+
+      - name: Install required tools
+        run: |
+          apt-get update && apt-get install -y wget parted gzip pigz xz-utils udev e2fsprogs debootstrap zstd \
+            xorriso grub-pc-bin grub-efi-amd64-bin shim-signed mtools libisoburn1 cpio dosfstools
+
+      - name: Setup variables
+        run: |
+          OUTPUT_IMAGE="astroberryos_3.1_${{ matrix.container }}-amd64.iso" && echo "OUTPUT_IMAGE=$OUTPUT_IMAGE" >> $GITHUB_ENV
+
+      - name: Build Astroberry OS image
+        run: |
+          astroberry-os/scripts/astroberry-image-build.sh "$OUTPUT_IMAGE"
+          ls -alh "$OUTPUT_IMAGE"
+
+      - name: Shrink and compress Astroberry OS image
+        run: |
+          if [ -e "$OUTPUT_IMAGE.xz" ]; then rm -rf "$OUTPUT_IMAGE.xz"; fi
+          pishrink.sh -asZv "$OUTPUT_IMAGE"
+          ls -alh "$OUTPUT_IMAGE.xz"
+
+      - name: Generate checksums
+        run: |
+          sha256sum "$OUTPUT_IMAGE.xz" > "$OUTPUT_IMAGE.xz.sha256"
+          cat "$OUTPUT_IMAGE.xz.sha256"
+          sha256sum -c "$OUTPUT_IMAGE.xz.sha256"
