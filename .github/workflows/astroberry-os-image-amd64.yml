@@ -22,7 +22,8 @@ jobs:
       - name: Get sources
         uses: actions/checkout@v6
         with:
-          repository: astroberry-official/astroberry-os
+          #repository: astroberry-official/astroberry-os
+          repository: papaf76/astroberry-os
           path: astroberry-os
 
       - name: Install required tools
