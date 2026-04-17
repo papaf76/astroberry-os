@@ -66,7 +66,7 @@ mount --rbind /dev/pts "$ROOTFS/dev/pts"
 
 # Prepare build scripts
 mkdir -p "$ROOTFS/tmp/astroberry-mods"
-cp "$WDIR/../scripts/astroberry-image-sysmod.sh" "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
+cp "$WDIR/../scripts/astroberry-image-sysmod-fabiorepo.sh" "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
 ASTROBERRYFILE=$(ls build/whl_astroberry-manager/dist/astroberry_manager*.whl | head -1)
 cp "$ASTROBERRYFILE" "$ROOTFS/tmp/astroberry-mods"
 chmod 755 "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
