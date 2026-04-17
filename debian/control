@@ -15,7 +15,7 @@ Description: Astroberry OS is an operating system for Raspberry Pi for controlli
 
 Package: astroberry-os-desktop
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, astroberry-os-lite, rpcc, rc-gui,
+Depends: ${shlibs:Depends}, ${misc:Depends}, astroberry-os-lite,
  lightdm, dbus-x11, xfce4, xfce4-goodies, xfce4-power-manager, xfce4-terminal,
  network-manager-applet, nm-connection-editor, synaptic, firefox, kstars-bleeding, phd2, phdlogview, gpredict,
  ser-player, firecapture, astrodmx-capture, ccdciel, astap, siril
