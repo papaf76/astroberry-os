@@ -57,6 +57,10 @@ trap cleanup EXIT
 
 # Create the initial debootstrap
 debootstrap --arch amd64 trixie "$ROOTFS" http://deb.debian.org/debian/
+chroot rootfs apt-get update
+chroot rootfs apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
+  intel-microcode intel-media-va-driver-nonfree va-driver-all haveged
+chroot rootfs apt-get clean
 
 # Prepare chroot environment
 mount -t proc /proc "$ROOTFS/proc"
@@ -104,8 +108,7 @@ debootstrap --variant=minbase --include=fdisk,gdisk,parted,tar,gzip,udev,kmod,do
   trixie rootfs http://deb.debian.org/debian/
 
 chroot rootfs apt-get update
-chroot rootfs apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
-  intel-microcode intel-media-va-driver-nonfree va-driver-all haveged
+chroot rootfs apt-get install -y --no-install-recommends linux-image-generic
 chroot rootfs apt-get clean
 
 cp -v $WDIR/iso-installer/init.sh rootfs/init
