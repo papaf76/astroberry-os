@@ -36,7 +36,6 @@ curl -fsSL http://192.168.2.151:8000/astroberry64.pub \
 cat <<EOF > /etc/apt/sources.list.d/astroberry.sources
 Types: deb
 URIs: http://192.168.2.151:8000/
-Architectures: amd64
 Suites: trixie
 Components: main
 Signed-By: /etc/apt/keyrings/astroberry.gpg
