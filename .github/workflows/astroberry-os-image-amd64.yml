@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Astroberry OS image
         run: |
-          astroberry-os/scripts/astroberry-image-build.sh "$OUTPUT_IMAGE"
+          astroberry-os/scripts-amd64/astroberry-image-build.sh "$OUTPUT_IMAGE"
           ls -alh "$OUTPUT_IMAGE"
 
       - name: Shrink and compress Astroberry OS image
