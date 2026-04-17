@@ -76,7 +76,7 @@ chroot "$ROOTFS" /bin/bash -c "apt-get install -y curl gpg"
 
 # Run system mods in chroot environment
 chroot "$ROOTFS" /bin/bash -c "export ASTROBERRY_VERSION=$ASTROBERRY_VERSION && \
-  cd /tmp/astroberry-mods && ./astroberry-archive-sysmod.sh"
+  cd /tmp/astroberry-mods && ./astroberry-image-sysmod.sh"
 #chroot "$ROOTFS" /bin/bash -c "apt-get clean"
 
 # Remove build scripts
