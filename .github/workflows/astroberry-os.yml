@@ -19,7 +19,7 @@ jobs:
       - name: Get the sources
         uses: actions/checkout@v6
         with:
-          repository: 'astroberry-official/astroberry-os'
+          repository: 'papaf76/astroberry-os'
           path: 'astroberry-os'
 
       - name: Build Astroberry OS meta-packages
