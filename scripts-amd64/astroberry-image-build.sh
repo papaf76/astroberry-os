@@ -66,10 +66,10 @@ mount --rbind /dev/pts "$ROOTFS/dev/pts"
 
 # Prepare build scripts
 mkdir -p "$ROOTFS/tmp/astroberry-mods"
-cp "$WDIR/../scripts/astroberry-archive-sysmod.sh" "$ROOTFS/tmp/astroberry-mods/astroberry-archive-sysmod.sh"
+cp "$WDIR/astroberry-image-sysmod.sh" "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
 ASTROBERRYFILE=$(ls dist/astroberry_manager*.whl | head -1)
 cp "$ASTROBERRYFILE" "$ROOTFS/tmp/astroberry-mods"
-chmod 755 "$ROOTFS/tmp/astroberry-mods/astroberry-archive-sysmod.sh"
+chmod 755 "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
 
 # Install requirements into the chroot
 chroot "$ROOTFS" /bin/bash -c "apt-get install -y curl gpg" 
