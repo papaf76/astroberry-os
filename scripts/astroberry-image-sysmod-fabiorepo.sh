@@ -44,7 +44,7 @@ EOF
 # Give priority to Astroberry OS repository
 cat <<EOF > /etc/apt/preferences.d/astroberry-pin
 Package: *
-Pin: origin 192.168.2.151:8000
+Pin: origin 192.168.2.151
 Pin-Priority: 900
 EOF
 
