@@ -60,7 +60,7 @@ debootstrap --arch amd64 trixie "$ROOTFS" http://deb.debian.org/debian/
 sed -i 's/main$/main contrib non-free-firmware non-free/' "$ROOTFS/etc/apt/sources.list"
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
-  intel-microcode intel-media-va-driver-nonfree va-driver-all haveged
+  intel-microcode va-driver-all haveged
 chroot "$ROOTFS" apt-get clean
 
 # Prepare chroot environment
