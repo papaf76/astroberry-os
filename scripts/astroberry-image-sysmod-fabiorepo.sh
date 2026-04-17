@@ -29,13 +29,13 @@ export DEBIAN_FRONTEND=noninteractive
 ################### ADD APT REPOSITORY ##################
 
 # Add Astroberry OS certificate
-curl -fsSL http://192.168.2.1:8000/debian/astroberry64.pub \
+curl -fsSL http://192.168.2.151:8000/debian/astroberry64.pub \
     | gpg --dearmor -o /etc/apt/keyrings/astroberry.gpg
 
 # Add Astroberry OS repository
 cat <<EOF > /etc/apt/sources.list.d/astroberry.sources
 Types: deb
-URIs: http://192.168.2.1:8000/debian/
+URIs: http://192.168.2.151:8000/debian/
 Architectures: amd64
 Suites: trixie
 Components: main
@@ -45,7 +45,7 @@ EOF
 # Give priority to Astroberry OS repository
 cat <<EOF > /etc/apt/preferences.d/astroberry-pin
 Package: *
-Pin: origin 192.168.2.1:8000
+Pin: origin 192.168.2.151:8000
 Pin-Priority: 900
 EOF
 
