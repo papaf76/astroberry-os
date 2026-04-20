@@ -74,7 +74,7 @@ chroot "$ROOTFS" apt install -y /tmp/astrodmx-capture.deb /tmp/astap.deb /tmp/cc
 rm -f $ROOTFS/tmp/astrodmx-capture.deb $ROOTFS/tmp/astap.deb $ROOTFS/tmp/ccdciel.deb $ROOTFS/tmp/libpasastro.deb
 chroot "$ROOTFS" apt-get install -y curl gpg
 chroot "$ROOTFS" bash -c 'curl -s --compressed "https://riblee.github.io/ppa/KEY.gpg" | gpg --dearmor -o /etc/apt/trusted.gpg.d/firecapture.gpg'
-echo "deb [signed-by=/etc/apt/trusted.gpg.d/firecapture.gpg] https://riblee.github.io/ppa ./' > $ROOTFS/etc/apt/sources.list.d/firecapture.list
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/firecapture.gpg] https://riblee.github.io/ppa ./" > $ROOTFS/etc/apt/sources.list.d/firecapture.list
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y firecapture
 chroot "$ROOTFS" apt-get clean
