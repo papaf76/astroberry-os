@@ -68,7 +68,9 @@ wget --quiet -O $ROOTFS/tmp/astap.deb \
   "https://downloads.sourceforge.net/project/astap-program/linux_installer/astap_amd64.deb?ts=gAAAAABp5ciU7OE0noIjB1qTTFRlNckXUW1TEo9G_9Kv8mN05c4kNFgvP4meqm7hWwbuHz6iV3NuwNiTg0S5gJ3HNmQmfPQ14A%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fastap-program%2Ffiles%2Flinux_installer%2Fastap_amd64.deb%2Fdownload"
 wget --quiet -O $ROOTFS/tmp/ccdciel.deb \
   "https://downloads.sourceforge.net/project/ccdciel/ccdciel_0.9.93/ccdciel_0.9.93-3961_amd64.deb?ts=gAAAAABp5cjXzCBrGpk_xGycEUGEF-pi_AHManlSmHxcQl6hmvASGsv46nJUDVqYjW_sl3byXg803yMT1hc0e5igMO1ZJRswyg%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fccdciel%2Ffiles%2Fccdciel_0.9.93%2Fccdciel_0.9.93-3961_amd64.deb%2Fdownload"
-chroot "$ROOTFS" apt install -y /tmp/astrodmx-capture.deb /tmp/astap.deb /tmp/ccdciel.deb
+wget --quiet -O $ROOTFS/tmp/libpasastro.deb \
+  "https://downloads.sourceforge.net/project/libpasastro/version_1.4.2/libpasastro_1.4.2-54_amd64.deb?ts=gAAAAABp5d-utQ8rEB-mcYu-QEoLLbW-lQFC7Jbrtw4FwsdPGILP9DbKSw8UzkVRRzP-UMNk44Go8AsLvsB5vO4PUrwuNqmHoQ%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flibpasastro%2Ffiles%2Fversion_1.4.2%2Flibpasastro_1.4.2-54_amd64.deb%2Fdownload"
+chroot "$ROOTFS" apt install -y /tmp/astrodmx-capture.deb /tmp/astap.deb /tmp/ccdciel.deb /tmp/libpasastro.deb
 rm -f $ROOTFS/tmp/astrodmx-capture.deb $ROOTFS/tmp/astap.deb $ROOTFS/tmp/ccdciel.deb
 chroot "$ROOTFS" 'curl -s --compressed "https://riblee.github.io/ppa/KEY.gpg" | apt-key add -'
 chroot "$ROOTFS" 'curl -s --compressed -o /etc/apt/sources.list.d/my_list_file.list "https://riblee.github.io/ppa/ppa_list_file.list"'
