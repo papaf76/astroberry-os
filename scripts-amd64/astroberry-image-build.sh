@@ -61,6 +61,18 @@ sed -i 's/main$/main contrib non-free-firmware non-free/' "$ROOTFS/etc/apt/sourc
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
   intel-microcode va-driver-all haveged zstd
+# Install required dependencies outside standard debian
+wget -O $ROOTFS/tmp/astrodmx-capture.deb \
+  https://www.astrodmx-capture.org.uk/downloads/astrodmx/current/linux-x86_64/astrodmx-capture_2.16.4_amd64.deb
+wget -O $ROOTFS/tmp/astap.deb \
+  https://downloads.sourceforge.net/project/astap-program/linux_installer/astap_amd64.deb?ts=gAAAAABp5ciU7OE0noIjB1qTTFRlNckXUW1TEo9G_9Kv8mN05c4kNFgvP4meqm7hWwbuHz6iV3NuwNiTg0S5gJ3HNmQmfPQ14A%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fastap-program%2Ffiles%2Flinux_installer%2Fastap_amd64.deb%2Fdownload
+wget -O $ROOTFS/tmp/ccdciel.deb \
+  https://downloads.sourceforge.net/project/ccdciel/ccdciel_0.9.93/ccdciel_0.9.93-3961_amd64.deb?ts=gAAAAABp5cjXzCBrGpk_xGycEUGEF-pi_AHManlSmHxcQl6hmvASGsv46nJUDVqYjW_sl3byXg803yMT1hc0e5igMO1ZJRswyg%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fccdciel%2Ffiles%2Fccdciel_0.9.93%2Fccdciel_0.9.93-3961_amd64.deb%2Fdownload
+chroot "$ROOTFS" apt install -y /tmp/*deb
+chroot "$ROOTFS" 'curl -s --compressed "https://riblee.github.io/ppa/KEY.gpg" | apt-key add -'
+chroot "$ROOTFS" 'curl -s --compressed -o /etc/apt/sources.list.d/my_list_file.list "https://riblee.github.io/ppa/ppa_list_file.list"'
+chroot "$ROOTFS" apt-get update
+chroot "$ROOTFS" apt-get install -y firecapture
 chroot "$ROOTFS" apt-get clean
 
 # Prepare chroot environment
