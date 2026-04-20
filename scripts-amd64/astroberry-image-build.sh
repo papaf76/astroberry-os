@@ -60,7 +60,7 @@ debootstrap --arch amd64 trixie "$ROOTFS" http://deb.debian.org/debian/
 sed -i 's/main$/main contrib non-free-firmware non-free/' "$ROOTFS/etc/apt/sources.list"
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
-  intel-microcode va-driver-all haveged zstd
+  intel-microcode va-driver-all haveged zstd cloud-init
 # Install required dependencies outside standard debian
 wget --quiet -O $ROOTFS/tmp/astrodmx-capture.deb \
   "https://www.astrodmx-capture.org.uk/downloads/astrodmx/current/linux-x86_64/astrodmx-capture_2.16.4_amd64.deb"
