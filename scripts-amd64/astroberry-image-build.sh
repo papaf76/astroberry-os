@@ -76,7 +76,7 @@ chroot "$ROOTFS" apt-get install -y curl gpg
 chroot "$ROOTFS" bash -c 'curl -s --compressed "https://riblee.github.io/ppa/KEY.gpg" | gpg --dearmor -o /etc/apt/trusted.gpg.d/firecapture.gpg'
 echo "deb [signed-by=/etc/apt/trusted.gpg.d/firecapture.gpg] https://riblee.github.io/ppa ./" > $ROOTFS/etc/apt/sources.list.d/firecapture.list
 chroot "$ROOTFS" apt-get update
-chroot "$ROOTFS" apt-get install -y --force-overwrite firecapture
+chroot "$ROOTFS" apt-get -o Dpkg::Options::="--force-overwrite" install -y firecapture
 chroot "$ROOTFS" apt-get clean
 
 # Prepare chroot environment
