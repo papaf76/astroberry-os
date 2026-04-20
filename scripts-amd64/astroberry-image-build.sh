@@ -72,8 +72,8 @@ wget --quiet -O $ROOTFS/tmp/libpasastro.deb \
   "https://downloads.sourceforge.net/project/libpasastro/version_1.4.2/libpasastro_1.4.2-54_amd64.deb?ts=gAAAAABp5d-utQ8rEB-mcYu-QEoLLbW-lQFC7Jbrtw4FwsdPGILP9DbKSw8UzkVRRzP-UMNk44Go8AsLvsB5vO4PUrwuNqmHoQ%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flibpasastro%2Ffiles%2Fversion_1.4.2%2Flibpasastro_1.4.2-54_amd64.deb%2Fdownload"
 chroot "$ROOTFS" apt install -y /tmp/astrodmx-capture.deb /tmp/astap.deb /tmp/ccdciel.deb /tmp/libpasastro.deb
 rm -f $ROOTFS/tmp/astrodmx-capture.deb $ROOTFS/tmp/astap.deb $ROOTFS/tmp/ccdciel.deb
-chroot "$ROOTFS" 'curl -s --compressed "https://riblee.github.io/ppa/KEY.gpg" | apt-key add -'
-chroot "$ROOTFS" 'curl -s --compressed -o /etc/apt/sources.list.d/my_list_file.list "https://riblee.github.io/ppa/ppa_list_file.list"'
+chroot "$ROOTFS" bash -c 'curl -s --compressed "https://riblee.github.io/ppa/KEY.gpg" | apt-key add -'
+chroot "$ROOTFS" bash -c 'curl -s --compressed -o /etc/apt/sources.list.d/my_list_file.list "https://riblee.github.io/ppa/ppa_list_file.list"'
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y firecapture
 chroot "$ROOTFS" apt-get clean
