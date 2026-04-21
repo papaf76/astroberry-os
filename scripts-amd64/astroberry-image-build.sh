@@ -70,6 +70,7 @@ chroot "$ROOTFS" apt-get install -y --no-install-recommends linux-image-generic 
   shim-signed grub-efi-amd64-signed \
   intel-microcode va-driver-all haveged zstd cloud-init
 # Install required dependencies outside standard debian
+echo "Downloading external debs..."
 wget --quiet -O $ROOTFS/tmp/astrodmx-capture.deb \
   "https://www.astrodmx-capture.org.uk/downloads/astrodmx/current/linux-x86_64/astrodmx-capture_2.16.4_amd64.deb"
 wget --quiet -O $ROOTFS/tmp/astap.deb \
