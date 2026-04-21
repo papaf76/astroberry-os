@@ -68,7 +68,7 @@ sed -i 's/main$/main contrib non-free-firmware non-free/' "$ROOTFS/etc/apt/sourc
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
   shim-signed grub-efi-amd64-signed \
-  intel-microcode va-driver-all haveged zstd cloud-init
+  intel-microcode va-driver-all haveged zstd cloud-init sudo
 # Install required dependencies outside standard debian
 echo "Downloading external debs..."
 wget --quiet -O $ROOTFS/tmp/astrodmx-capture.deb \
