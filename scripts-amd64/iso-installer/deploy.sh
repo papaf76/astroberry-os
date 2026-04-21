@@ -72,7 +72,16 @@ mount "$EFI_PART" /mnt/target/boot/efi
 printf "Extracting System Image...\n"
 pv "$IMAGE_FILE" | tar --zstd -xpf - -C /mnt/target
 
-# 4. The Chroot Trigger
+# 4. Generate the fstab
+echo "Creating fstab file..."
+ROOT_UUID=$(lsblk -dn -o UUID "$ROOT_PART")
+EFI_UUID=$(lsblk -dn -o UUID "$EFI_PART")
+cat <<EOF > "/mnt/target/etc/fstab"
+UUID=$ROOT_UUID / ext4 errors=remount-ro 0 1
+UUID=$EFI_UUID /boot/efi vfat umask=0077 0 1
+EOF
+
+# 5. The Chroot Trigger
 printf "Entering Chroot to trigger the bootloader installation...\n"
 mount --bind /dev /mnt/target/dev
 mount --bind /proc /mnt/target/proc
@@ -89,7 +98,7 @@ chroot /mnt/target /bin/bash -c "
     update-grub
 "
 
-# 5. Cleanup
+# 6. Cleanup
 printf "Cleaning up...\n"
 umount /mnt/target/dev /mnt/target/proc /mnt/target/sys/firmware/efi/efivars /mnt/target/sys
 umount /mnt/target/boot/efi
