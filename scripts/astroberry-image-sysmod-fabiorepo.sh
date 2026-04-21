@@ -582,9 +582,9 @@ set -xe
 while ! pgrep -u astroberry xfsettingsd > /dev/null; do
     sleep 1
 done
-export DBUS_SESSION_BUS_ADDRESS=\$(grep -z '^DBUS_SESSION_BUS_ADDRESS=' \
-    /proc/\$(pgrep -u astroberry xfsettingsd | head -n 1)/environ \
-    | tr -d '\0' \
+export DBUS_SESSION_BUS_ADDRESS=\$(grep -z '^DBUS_SESSION_BUS_ADDRESS=' \\
+    /proc/\$(pgrep -u astroberry xfsettingsd | head -n 1)/environ \\
+    | tr -d '\0' \\
     | cut -d= -f2-)
 export DISPLAY=:70
 
