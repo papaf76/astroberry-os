@@ -15,6 +15,7 @@ echo "--- Loading Storage Drivers ---"
 modprobe ahci 2>/dev/null      # For SATA
 modprobe ata_piix 2>/dev/null  # For IDE/PATA
 modprobe virtio_pci 2>/dev/null # For VirtIO
+modprobe virtio_scsi 2>/dev/null # For VirtIO SCSI
 modprobe sr_mod 2>/dev/null    # For CD-ROMs
 modprobe usb-storage 2>/dev/null # For USB
 modprobe uas 2>/dev/null # For USB

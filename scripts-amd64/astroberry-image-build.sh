@@ -57,9 +57,17 @@ trap cleanup EXIT
 
 # Create the initial debootstrap
 debootstrap --arch amd64 trixie "$ROOTFS" http://deb.debian.org/debian/
+
+# Prepare chroot environment
+mount -t proc /proc "$ROOTFS/proc"
+mount -t sysfs /sys "$ROOTFS/sys"
+mount --rbind /dev "$ROOTFS/dev"
+mount --rbind /dev/pts "$ROOTFS/dev/pts"
+
 sed -i 's/main$/main contrib non-free-firmware non-free/' "$ROOTFS/etc/apt/sources.list"
 chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
+  shim-signed grub-efi-amd64-signed \
   intel-microcode va-driver-all haveged zstd cloud-init
 # Install required dependencies outside standard debian
 wget --quiet -O $ROOTFS/tmp/astrodmx-capture.deb \
@@ -79,11 +87,24 @@ chroot "$ROOTFS" apt-get update
 chroot "$ROOTFS" apt-get -o Dpkg::Options::="--force-overwrite" install -y firecapture
 chroot "$ROOTFS" apt-get clean
 
-# Prepare chroot environment
-mount -t proc /proc "$ROOTFS/proc"
-mount -t sysfs /sys "$ROOTFS/sys"
-mount --rbind /dev "$ROOTFS/dev"
-mount --rbind /dev/pts "$ROOTFS/dev/pts"
+# Preconfigure cloud init to mimic raspberry os
+mkdir -p $ROOTFS/boot/firmware
+cat <<EOF > "$ROOTFS/etc/cloud/cloud.cfg.d/99-astroberry.cfg"
+datasource_list: [ NoCloud, None ]
+datasource:
+  NoCloud:
+    seedfrom: file:///boot/firmware
+
+ssh:
+  emit_keys_to_console: false
+no_ssh_fingerprints: true
+ssh_deletekeys: false
+ssh_genkeytypes: []
+EOF
+cat <<EOF > "$ROOTFS/boot/firmware/meta-data"
+dsmode: local
+instance_id: astroberry
+EOF
 
 # Prepare build scripts
 mkdir -p "$ROOTFS/tmp/astroberry-mods"
@@ -91,9 +112,6 @@ cp "$WDIR/../scripts/astroberry-image-sysmod-fabiorepo.sh" "$ROOTFS/tmp/astrober
 ASTROBERRYFILE=$(ls build/whl_astroberry-manager/dist/astroberry_manager*.whl | head -1)
 cp "$ASTROBERRYFILE" "$ROOTFS/tmp/astroberry-mods"
 chmod 755 "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
-
-# Install requirements into the chroot
-chroot "$ROOTFS" /bin/bash -c "apt-get install -y curl gpg" 
 
 # Run system mods in chroot environment
 chroot "$ROOTFS" /bin/bash -c "export ASTROBERRY_VERSION=$ASTROBERRY_VERSION && \
@@ -137,7 +155,8 @@ chmod +x iso/installer/deploy.sh
 cp -v $OUTPUT_ARCHIVE iso/installer/
 
 mkdir -p iso/boot/grub
-cp -v rootfs/boot/vmlinuz iso/boot/vmlinuz
+KERNEL=$(ls rootfs/boot/vmlinuz-*)
+cp -v $KERNEL iso/boot/vmlinuz
 (cd rootfs && find . | cpio -H newc -o | gzip > ../iso/boot/initrd.img)
           
 cp -v $WDIR/iso-installer/grub.cfg iso/boot/grub
@@ -157,7 +176,7 @@ mmd -i efiboot.img ::/EFI/BOOT
 mcopy -i efiboot.img iso/EFI/BOOT/* ::/EFI/BOOT/
 mcopy -i efiboot.img iso/boot/grub/grub.cfg ::/grub.cfg
 
-ISOFILE=$(basename "$OUTPUT_ARCHIVE").iso
+ISOFILE=$(basename "$OUTPUT_ARCHIVE" .tar.zst).iso
 xorriso -as mkisofs -r -V astroberrycd -o $ISOFILE \
   -J -joliet-long -no-emul-boot -e efiboot.img \
   -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
