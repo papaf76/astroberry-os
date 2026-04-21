@@ -95,7 +95,7 @@ chroot /mnt/target /bin/bash -c "
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=astroberry --recheck
     
     # Generate the grub.cfg
-    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"net.ifnames=0 biosdevname=0\"" > /etc/default/grub
+    echo 'GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0 biosdevname=0"' > /etc/default/grub
     update-grub
 "
 
