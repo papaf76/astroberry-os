@@ -89,6 +89,7 @@ chroot "$ROOTFS" apt-get clean
 
 # Preconfigure cloud init to mimic raspberry os
 mkdir -p $ROOTFS/boot/firmware
+touch $ROOTFS/boot/firmware/cmdline.txt
 cat <<EOF > "$ROOTFS/boot/firmware/README"
 This folder is here for Astroberry compatibility with scripts
 made to work on the first platform, the Raspberry Pi.
