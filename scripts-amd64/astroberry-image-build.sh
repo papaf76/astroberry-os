@@ -89,6 +89,11 @@ chroot "$ROOTFS" apt-get clean
 
 # Preconfigure cloud init to mimic raspberry os
 mkdir -p $ROOTFS/boot/firmware
+cat <<EOF > "$ROOTFS/boot/firmware/README"
+This folder is here for Astroberry compatibility with scripts
+made to work on the first platform, the Raspberry Pi.
+Leave it as is.
+EOF
 cat <<EOF > "$ROOTFS/etc/cloud/cloud.cfg.d/99-astroberry.cfg"
 datasource_list: [ NoCloud, None ]
 datasource:
