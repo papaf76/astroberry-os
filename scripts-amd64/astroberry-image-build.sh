@@ -139,7 +139,7 @@ rm -rf $ROOTFS
 if [ -e "rootfs" ]; then rm -rf rootfs; fi
 mkdir rootfs
           
-debootstrap --variant=minbase --include=fdisk,gdisk,parted,tar,gzip,udev,kmod,dosfstools,pv,zstd \
+debootstrap --variant=minbase --include=e2fsprogs,fdisk,gdisk,parted,tar,gzip,udev,kmod,dosfstools,pv,zstd \
   trixie rootfs http://deb.debian.org/debian/
 
 chroot rootfs apt-get update
