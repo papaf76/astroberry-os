@@ -15,10 +15,10 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-OUTPUT_ARCHIVE="$1"
+ISOFILE="$1"
 
 # Get and validate version from the image file name
-ASTROBERRY_VERSION="$(echo $OUTPUT_ARCHIVE | cut -d_ -f2)"
+ASTROBERRY_VERSION="$(echo $ISOFILE | cut -d_ -f2)"
 if [[ ! "$ASTROBERRY_VERSION" =~ ^[0-9]\.([0-9]|[0-9][0-9])$ ]]; then
     echo "Wrong version format! Expected #.# or #.##, got $ASTROBERRY_VERSION"
     exit 3
@@ -137,6 +137,7 @@ done
 sync
 
 # Create archive
+OUTPUT_ARCHIVE="${ISOFILE%.iso}.tar.zst"
 tar --zstd -cvf $OUTPUT_ARCHIVE -C $ROOTFS .
 
 # Clean ROOTFS
@@ -183,7 +184,6 @@ mmd -i efiboot.img ::/EFI/BOOT
 mcopy -i efiboot.img iso/EFI/BOOT/* ::/EFI/BOOT/
 mcopy -i efiboot.img iso/boot/grub/grub.cfg ::/grub.cfg
 
-ISOFILE=$(basename "$OUTPUT_ARCHIVE" .tar.zst).iso
 xorriso -as mkisofs -r -V astroberrycd -o $ISOFILE \
   -J -joliet-long -no-emul-boot -e efiboot.img \
   -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
