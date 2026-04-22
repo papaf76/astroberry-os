@@ -141,7 +141,7 @@ OUTPUT_ARCHIVE="${ISOFILE%.iso}.tar.zst"
 tar --zstd -cvf $OUTPUT_ARCHIVE -C $ROOTFS .
 
 # Clean ROOTFS
-rm -rf $ROOTFS
+rm -rf $ROOTFS/*
 
 # Create ISO
 if [ -e "rootfs" ]; then rm -rf rootfs; fi
@@ -192,4 +192,4 @@ xorriso -as mkisofs -r -V astroberrycd -o $ISOFILE \
 ls -al $ISOFILE
 
 # Cleanup
-rm -rf rootfs iso efiboot.img
+rm -rf rootfs iso efiboot.img $OUTPUT_ARCHIVE
