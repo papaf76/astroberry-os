@@ -190,3 +190,6 @@ xorriso -as mkisofs -r -V astroberrycd -o $ISOFILE \
   iso efiboot.img
 
 ls -al $ISOFILE
+
+# Cleanup
+rm -rf rootfs iso efiboot.img
