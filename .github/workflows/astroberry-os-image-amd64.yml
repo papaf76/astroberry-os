@@ -42,14 +42,8 @@ jobs:
           astroberry-os/scripts-amd64/astroberry-image-build.sh "$OUTPUT_IMAGE"
           ls -alh "$OUTPUT_IMAGE"
 
-      - name: Shrink and compress Astroberry OS image
-        run: |
-          if [ -e "$OUTPUT_IMAGE.xz" ]; then rm -rf "$OUTPUT_IMAGE.xz"; fi
-          pishrink.sh -asZv "$OUTPUT_IMAGE"
-          ls -alh "$OUTPUT_IMAGE.xz"
-
       - name: Generate checksums
         run: |
-          sha256sum "$OUTPUT_IMAGE.xz" > "$OUTPUT_IMAGE.xz.sha256"
-          cat "$OUTPUT_IMAGE.xz.sha256"
-          sha256sum -c "$OUTPUT_IMAGE.xz.sha256"
+          sha256sum "$OUTPUT_IMAGE" > "$OUTPUT_IMAGE.sha256"
+          cat "$OUTPUT_IMAGE.sha256"
+          sha256sum -c "$OUTPUT_IMAGE.sha256"
