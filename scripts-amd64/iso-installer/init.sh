@@ -10,6 +10,9 @@ echo "1 1 1 1" > /proc/sys/kernel/printk
 # Start the udev daemon
 /lib/systemd/systemd-udevd --daemon
 
+# Clear the screen
+clear
+
 # Load the Storage Stack
 echo "--- Loading Storage Drivers ---"
 modprobe ahci 2>/dev/null      # For SATA
