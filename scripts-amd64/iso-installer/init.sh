@@ -3,6 +3,8 @@
 mount -t proc proc /proc
 mount -t sysfs sys /sys
 mount -t devtmpfs dev /dev
+modprobe efivarfs
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
 
 # Silence the kernel output
 echo "1 1 1 1" > /proc/sys/kernel/printk
