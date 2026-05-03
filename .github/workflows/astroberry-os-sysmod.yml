@@ -1,0 +1,29 @@
+name: Astroberry OS sysmod package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        container: ["debian-trixie"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.container }}
+
+    steps:
+      - name: Get the sources
+        uses: actions/checkout@v6
+        with:
+          repository: 'astroberry-official/astroberry-os-sysmod'
+          path: 'astroberry-os-sysmod'
+
+      - name: Build Astroberry OS sysmod package
+        run: |
+          rm -rf build/deb_astroberry-os-sysmod && mkdir -p build/deb_astroberry-os-sysmod && \
+          cp -r astroberry-os-sysmod/* build/deb_astroberry-os-sysmod/ && cd build/deb_astroberry-os-sysmod && \
+          fakeroot debian/rules binary

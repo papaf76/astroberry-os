@@ -3,8 +3,7 @@
 # astroberry-image-build.sh
 # Prepare vanilla system image for customization
 # Invoked by: .github/workflows/astroberry-os-image.yml
-# Runs: scripts/astroberry-image-sysmod.sh
-# in chroot environment
+#
 
 set -e
 
@@ -21,13 +20,6 @@ OUTPUT_IMAGE="$1"
 if [ ! -f "$OUTPUT_IMAGE" ]; then
     echo "$OUTPUT_IMAGE does not exist!"
     exit 2
-fi
-
-# Get and validate version from the image file name
-ASTROBERRY_VERSION="$(echo $OUTPUT_IMAGE | cut -d_ -f2)"
-if [[ ! "$ASTROBERRY_VERSION" =~ ^[0-9]\.([0-9]|[0-9][0-9])$ ]]; then
-    echo "Wrong version format! Expected #.# or #.##, got $ASTROBERRY_VERSION"
-    exit 3
 fi
 
 # Set working dir
@@ -85,17 +77,75 @@ mount -t sysfs /sys "$ROOTFS/sys"
 mount --rbind /dev "$ROOTFS/dev"
 mount --rbind /dev/pts "$ROOTFS/dev/pts"
 
-# Prepare build scripts
-mkdir -p "$ROOTFS/tmp/astroberry-mods"
-cp "$WDIR/astroberry-image-sysmod.sh" "$ROOTFS/tmp/astroberry-mods/"
-cp "build/whl_astroberry-manager/dist/astroberry_manager-1.1-py3-none-any.whl" "$ROOTFS/tmp/astroberry-mods/"
-chmod 755 "$ROOTFS/tmp/astroberry-mods/astroberry-image-sysmod.sh"
+# Add Astroberry OS certificate
+curl -fsSL https://astroberry.io/debian/astroberry.asc | gpg --dearmor -o "$ROOTFS/etc/apt/keyrings/astroberry.gpg"
 
-# Run system mods in chroot environment
-chroot "$ROOTFS" /bin/bash -c "export ASTROBERRY_VERSION=$ASTROBERRY_VERSION && cd /tmp/astroberry-mods && ./astroberry-image-sysmod.sh"
+# Add Astroberry OS repository
+cat <<EOF > "$ROOTFS/etc/apt/sources.list.d/astroberry.sources"
+Types: deb
+URIs: https://astroberry.io/debian/
+Architectures: arm64
+Suites: trixie
+Components: main
+Signed-By: /etc/apt/keyrings/astroberry.gpg
+EOF
 
-# Remove build scripts
-rm -rf "$ROOTFS/tmp/astroberry-mods"
+# Give priority to Astroberry OS repository
+cat <<EOF > "$ROOTFS/etc/apt/preferences.d/astroberry-pin"
+Package: *
+Pin: origin astroberry.io
+Pin-Priority: 900
+EOF
+
+# Add post-installation clean up script
+cat <<EOF > "$ROOTFS/tmp/astroberry-os-cleanup.sh"
+#!/bin/bash
+
+# Clean AstroDMx leftovers
+rm -rf /install.sh # AstroDMx leftover
+echo "NoDisplay=true" >> /usr/share/desktop-directories/astrodmx.directory # remove astrodmx from top level menu
+
+# Clean packages
+apt-get remove -y --purge modemmanager
+apt-get autoremove -y
+
+# Clean apt cache
+apt-get clean
+rm -rf /var/cache/apt/archives/*.deb
+rm -rf /var/cache/apt/archives/partial/*
+rm -rf /var/lib/apt/lists/*
+
+# Clean logs
+find /var/log -type f -name "*.log" -delete
+find /var/log -type f -name "*.log.*" -delete
+find /var/log -type f -name "*.gz" -delete
+truncate -s 0 /var/log/lastlog
+truncate -s 0 /var/log/wtmp
+truncate -s 0 /var/log/btmp
+
+# Clean tmp
+rm -rf /tmp/*
+rm -rf /var/tmp/*
+
+# Clean caches
+rm -rf /home/*/.cache/*
+rm -rf /root/.cache/*
+
+# Clean bash history
+rm -f /home/*/.bash_history
+rm -f /root/.bash_history
+
+# Truncate journal
+journalctl --vacuum-time=1s
+rm -rf /var/log/journal/*
+
+# Remove self
+rm -rf /tmp/astroberry-os-cleanup.sh
+EOF
+chmod 755 "$ROOTFS/tmp/astroberry-os-cleanup.sh"
+
+# Install Astroberry OS meta package
+chroot "$ROOTFS" /bin/bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -y astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
 
 # Unmount filesystems
 for dir in proc sys dev/pts dev; do
@@ -112,4 +162,3 @@ resize2fs -M "${LOOP_DEV}p2"
 
 # Synchronize filesystem
 sync
-
