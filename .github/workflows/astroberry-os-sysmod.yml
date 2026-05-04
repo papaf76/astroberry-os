@@ -1,4 +1,4 @@
-name: Astroberry OS sysmod package
+name: Astroberry OS sysmod
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
           repository: 'astroberry-official/astroberry-os-sysmod'
           path: 'astroberry-os-sysmod'
 
-      - name: Build Astroberry OS sysmod package
+      - name: Build Astroberry OS sysmod
         run: |
           rm -rf build/deb_astroberry-os-sysmod && mkdir -p build/deb_astroberry-os-sysmod && \
           cp -r astroberry-os-sysmod/* build/deb_astroberry-os-sysmod/ && cd build/deb_astroberry-os-sysmod && \
