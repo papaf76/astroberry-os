@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         distro: ["debian-trixie"]
-        architecture: ["arm64"]
+        architecture: ["arm64", "amd64"]
 
     steps:
       - name: Login to Registry
