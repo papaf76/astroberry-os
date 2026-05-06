@@ -13,7 +13,7 @@ RUN apt-get update && apt-get -y upgrade && apt-get install -y \
 
 # Add raspberry pi repository
 RUN curl -L https://archive.raspberrypi.com/debian/raspberrypi.gpg.key | tee /etc/apt/trusted.gpg.d/raspi.asc && \
-    echo "deb http://archive.raspberrypi.com/debian/ trixie main" > /etc/apt/sources.list.d/raspi.list && \
+    echo "deb [trusted=yes] http://archive.raspberrypi.com/debian/ trixie main" > /etc/apt/sources.list.d/raspi.list && \
     apt-get update
 
 # Core development packages
