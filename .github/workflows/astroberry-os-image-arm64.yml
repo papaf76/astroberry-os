@@ -1,4 +1,4 @@
-name: Astroberry OS image
+name: Astroberry OS image (arm64)
 
 on:
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
 
       - name: Build Astroberry OS image
         run: |
-          astroberry-os/scripts/astroberry-image-build.sh "$OUTPUT_IMAGE"
+          astroberry-os/scripts/astroberry-image-build-arm64.sh "$OUTPUT_IMAGE"
           ls -alh "$OUTPUT_IMAGE"
 
       - name: Shrink and compress Astroberry OS image
