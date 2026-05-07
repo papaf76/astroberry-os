@@ -20,7 +20,7 @@ jobs:
       - name: Get KStars Sources
         run: |
           if [ -d kstars ]; then rm -rf kstars; fi
-          git clone --depth 1 --branch master https://invent.kde.org/education/kstars.git && cd kstars && git checkout -b stable-3.8.2
+          git clone --depth 1 --branch stable-3.8.2 https://invent.kde.org/education/kstars.git
 
       - name: Install KStars Dependencies
         run: |
@@ -32,10 +32,6 @@ jobs:
           rm -rf build/deb_kstars && mkdir -p build/deb_kstars && \
           cp -r kstars/* build/deb_kstars/ && \
           cp -r kstars/packaging/linux/debian build/deb_kstars/ && \
-          sed -i "/l10npkgs_firstversion_ok := 4:17.03.90-0~/d" build/deb_kstars/debian/rules && \
-          sed -i "s/include \/usr\/share\/pkg-kde-tools\/qt-kde-team\/2\/debian-qt-kde.mk/%:/g" build/deb_kstars/debian/rules && \
-          sed -i "s/include \/usr\/share\/pkg-kde-tools\/qt-kde-team\/2\/l10n-packages.mk/\tdh \$@ --with kf5/g" build/deb_kstars/debian/rules && \
-          sed -i "/.PHONY: override_dh_auto_test override_dh_auto_configure/d" build/deb_kstars/debian/rules && \
           cd build/deb_kstars && \
           echo "export DEB_BUILD_OPTIONS := parallel=\$(shell nproc)" >> debian/rules && \
           fakeroot debian/rules binary
