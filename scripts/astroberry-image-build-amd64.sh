@@ -200,6 +200,3 @@ xorriso -as mkisofs -r -V astroberrycd -o $ISOFILE \
 
 # Showing the end ISO file
 ls -al $ISOFILE
-
-# Cleanup
-rm -rf $ISOROOTFS iso efiboot.img $OUTPUT_ARCHIVE
