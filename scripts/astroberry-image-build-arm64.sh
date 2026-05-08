@@ -100,6 +100,8 @@ EOF
 cat <<EOF > "$ROOTFS/tmp/astroberry-os-cleanup.sh"
 #!/bin/bash
 
+export DEBIAN_FRONTEND=noninteractive
+
 # Clean AstroDMx leftovers
 rm -rf /install.sh # AstroDMx leftover
 echo "NoDisplay=true" >> /usr/share/desktop-directories/astrodmx.directory # remove astrodmx from top level menu
@@ -144,7 +146,9 @@ EOF
 chmod 755 "$ROOTFS/tmp/astroberry-os-cleanup.sh"
 
 # Install Astroberry OS meta package
-chroot "$ROOTFS" /bin/bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -y astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
+chroot "$ROOTFS" /bin/bash -c \
+  "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install -yqq astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
+
 
 # Unmount filesystems
 for dir in proc sys dev/pts dev; do
