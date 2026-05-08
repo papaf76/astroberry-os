@@ -85,7 +85,7 @@ cat <<EOF > "$ROOTFS/etc/apt/sources.list.d/astroberry.sources"
 Types: deb
 URIs: https://astroberry.io/debian/
 Suites: trixie
-Components: main
+Components: testing
 Signed-By: /etc/apt/keyrings/astroberry.gpg
 EOF
 
