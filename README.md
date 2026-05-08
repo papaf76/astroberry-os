@@ -23,42 +23,40 @@ Debian packages are compiled and built using [GitHub Actions](https://github.com
 The following workflows are used to compile and build debian packages of software provided by Astroberry OS APT repository.
 Make sure that your self-hosted actions runner is started before running any workflow.
 
-- **Astroberry OS builder** - builds a docker image with preconfigured building environment.
+- **Astroberry OS builder** ⚙️ builds a docker image with preconfigured building environment.
   It runs automaticaly whenever you compile and build a debian package. If you need to start it manually, run `scripts/astroberry-docker-run.sh`.
-  Docker image is exported to [https://ghcr.io/astroberry-official/astroberry-os/debian-trixie](https://ghcr.io/astroberry-official/astroberry-os/debian-trixie).
 
 
-- **Astroberry OS image** - build Astroberry OS system image file.
+- **Astroberry OS image [arm64|amd64]** 💾 build Astroberry OS system image. ⭐ Starting from v3.2 amd64 architecture is supported.
 
 
-- **Astroberry OS meta-package** - build astroberry-os-[lite|desktop|full] meta-packages that install required packages.
+- **Astroberry OS meta-package** 📦 build astroberry-os-[lite|desktop|full] meta-packages that install required packages.
 
 
-- **Astroberry OS repository** - add packages and update Astroberry OS APT repository.
+- **Astroberry OS sysmod** 📦 build astroberry-os-sysmod that provides custom mods to the original Raspberry Pi OS.
 
 
-- **Software packages:**
+- **Software packages** 📦 (recommended order of running)
 
-  - **Build Astroberry Manager** - compile Astroberry Wanager - web frontend for Astroberry OS.
+  ✔️ **Build GSC** - compile and package Guide Star Catalog (GSC) of stars.
 
-  - **Build GSC** - compile and package Guide Star Catalog (GSC) of stars.
+  ✔️ **Build INDI Core** - compile and package core INDI packages. Virtually all other packages depend on it.
 
-  - **Build INDI Core** - compile and package core INDI packages. Virtually all other packages depend on it.
+  ✔️ **Build INDI 3rd Party Libraries** - compile and package INDI 3rd party libraries.
 
-  - **Build INDI 3rd Party Libraries** - compile and package INDI 3rd party libraries.
+  ✔️ **Build INDI 3rd Party Drivers** - compile and package INDI 3rd party drivers.
 
-  - **Build INDI 3rd Party Drivers** - compile and package INDI 3rd party drivers.
+  ✔️ **Build StellarSolver** - compile and package StellarSolver. Required by KStars.
 
-  - **Build StellarSolver** - compile and package StellarSolver. Required by KStars.
+  ✔️ **Build KStars** - compile and package KStars.
 
-  - **Build KStars** - compile and package KStars.
+  ✔️ **Build PHD2** - compile and package PHD2.
 
-  - **Build PHD2** - compile and package PHD2.
+  ✔️ **Build PHD2 Log Viewer** - compile and package PHD2 Log Viewer.
 
-  - **Build PHD2 Log Viewer** - compile and package PHD2 Log Viewer.
+  ✔️ **Build Astroberry Manager** - compile Astroberry Wanager - web frontend for Astroberry OS.
 
-
-## Install Astroberry OS
+## Install Astroberry OS 🏃
 
 ### Quick install
 The easiest way to install Astroberry OS is to [download a binary system image](https://www.astroberry.io/download), flash a new microSD card and boot Raspberry Pi with it.
@@ -90,25 +88,25 @@ Finally you can install Astroberry OS.
 
 ```
 # Install Astroberry OS
-sudo apt update && sudo apt install astroberry-os-lite
+sudo apt update && sudo apt install astroberry-os-desktop
 ```
 Visit [www.astroberry.io](https://www.astroberry.io/install) for detailed installation instructions.
 
 ### Astroberry OS flavours and ingredients
 Two flavors of Astroberry OS are available for installation: **astroberry-os-lite** and **astroberry-os-desktop**
 
-Astroberry OS **Lite** provides:
+Astroberry OS **Lite**
 - Built on top of official Raspberry Pi OS
-- Support for 64bit Raspberry Pi 5
+- Support for 64bit Raspberry Pi 4 & 5
 - Wireless Hotspot for accessing the system in the field
-- New generation Astroberry OS web manager
 - INDI framework with official device drivers
 - Guide Star Catalog (GSC) for simulating star fields
 - Astrometry for field solving
+- New generation web-based Astroberry Manager
 
-Astroberry OS **Desktop** provides everything from lite flavour PLUS:
-- XFCE Desktop Environment
-- Remote desktop accessible with a web browser
+Astroberry OS **Desktop**
+- All features from astroberry-os-lite
+- XFCE Desktop Environment accessible with a web browser
 - KStars planetarium software
 - PHD2 for autoguiding
 - PHD Log Viewer for inspecting guiding performance
