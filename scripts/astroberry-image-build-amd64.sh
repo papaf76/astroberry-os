@@ -135,17 +135,17 @@ chmod +x $ROOTFS/tmp/astroberry-os-cleanup.sh
 chroot $ROOTFS /bin/bash -c \
   "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install -yqq astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
 
+# Synchronize filesystem
+sync
+
 # Unmount filesystems
 for dir in proc sys dev/pts dev; do
     umount -l $ROOTFS/$dir
 done
 
-# Synchronize filesystem
-sync
-
 # Create archive
 OUTPUT_ARCHIVE="${ISOFILE%.iso}.tar.zst"
-tar --zstd -cvf $OUTPUT_ARCHIVE -C $ROOTFS .
+tar --zstd -cf $OUTPUT_ARCHIVE -C $ROOTFS .
 
 ############## ISO/Installer creation section ################
 ISOROOTFS="isorootfs"
