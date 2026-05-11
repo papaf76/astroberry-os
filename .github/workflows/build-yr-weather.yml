@@ -1,0 +1,37 @@
+name: Build yr-weather
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ["debian-trixie"]
+        architecture: ["arm64", "amd64"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.distro }}-${{ matrix.architecture }}
+
+    steps:
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest
+
+      - name: Get the sources of yr-weather
+        uses: actions/checkout@v6
+        with:
+          repository: 'rkaczorek/yr-weather'
+          ref: astroberry
+          path: 'yr-weather'
+
+      - name: Build yr-weather
+        run: |
+          rm -rf build/deb_yr-weather && mkdir -p build/deb_yr-weather && \
+          cp -r yr-weather/* build/deb_yr-weather/ && \
+          cd build/deb_yr-weather && \
+          fakeroot debian/rules binary

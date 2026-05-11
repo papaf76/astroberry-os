@@ -1,0 +1,37 @@
+name: Build GPSD Client
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ["debian-trixie"]
+        architecture: ["arm64", "amd64"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.distro }}-${{ matrix.architecture }}
+
+    steps:
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest
+
+      - name: Get the sources of GPSD Client
+        uses: actions/checkout@v6
+        with:
+          repository: 'rkaczorek/gpsdclient'
+          ref: astroberry
+          path: 'gpsdclient'
+
+      - name: Build GPSD Client
+        run: |
+          rm -rf build/deb_gpsdclient && mkdir -p build/deb_gpsdclient && \
+          cp -r gpsdclient/* build/deb_gpsdclient/ && \
+          cd build/deb_gpsdclient && \
+          fakeroot debian/rules binary

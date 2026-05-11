@@ -1,0 +1,38 @@
+name: Build PyIndi Client
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ["debian-trixie"]
+        architecture: ["arm64", "amd64"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.distro }}-${{ matrix.architecture }}
+
+    steps:
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest python3-dev swig libcfitsio-dev libnova-dev \
+          dpkg -i build/indi-bin_*_${{ matrix.architecture }}.deb build/libindi1_*_${{ matrix.architecture }}.deb build/libindi-data_*_all.deb build/libindi-dev_*_${{ matrix.architecture }}.deb
+
+      - name: Get the sources of PyIndi Client
+        uses: actions/checkout@v6
+        with:
+          repository: 'rkaczorek/pyindi-client'
+          ref: astroberry
+          path: 'pyindi-client'
+
+      - name: Build PyIndi Client
+        run: |
+          rm -rf build/deb_pyindi-client && mkdir -p build/deb_pyindi-client && \
+          cp -r pyindi-client/* build/deb_pyindi-client/ && \
+          cd build/deb_pyindi-client && \
+          fakeroot debian/rules binary
