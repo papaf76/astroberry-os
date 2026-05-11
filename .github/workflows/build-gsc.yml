@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Get GSC Sources
         run: |
-          if [ ! -d gsc ]; then git clone --depth 1 --branch master https://git.launchpad.net/gsc; fi
+          git clone --depth 1 --branch master https://git.launchpad.net/gsc
 
       - name: Build GSC Packages
         run: |

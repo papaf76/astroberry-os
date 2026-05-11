@@ -1,4 +1,4 @@
-name: Build Astroberry Manager
+name: Build GPSD Client
 
 on:
   workflow_dispatch:
@@ -22,15 +22,16 @@ jobs:
         run: |
           apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest
 
-      - name: Get the sources of Astroberry Manager
+      - name: Get the sources of GPSD Client
         uses: actions/checkout@v6
         with:
-          repository: 'astroberry-official/astroberry-manager'
-          path: 'astroberry-manager'
+          repository: 'rkaczorek/gpsdclient'
+          ref: astroberry
+          path: 'gpsdclient'
 
-      - name: Build Astroberry Manager
+      - name: Build GPSD Client
         run: |
-          rm -rf build/deb_astroberry-manager && mkdir -p build/deb_astroberry-manager && \
-          cp -r astroberry-manager/* build/deb_astroberry-manager/ && \
-          cd build/deb_astroberry-manager && \
+          rm -rf build/deb_gpsdclient && mkdir -p build/deb_gpsdclient && \
+          cp -r gpsdclient/* build/deb_gpsdclient/ && \
+          cd build/deb_gpsdclient && \
           fakeroot debian/rules binary

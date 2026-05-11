@@ -9,8 +9,8 @@ WORKDIR /work
 
 # Core tools
 RUN apt-get update && apt-get -y upgrade && apt-get install -y \
-    curl git cmake extra-cmake-modules build-essential zlib1g-dev \
-    cdbs debhelper pkg-kde-tools reprepro sshpass
+    curl git cmake extra-cmake-modules build-essential \
+    cdbs debhelper pkg-kde-tools reprepro sshpass libusb-1.0-0-dev zlib1g-dev
 
 # Add raspberry pi repository
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
@@ -66,9 +66,18 @@ RUN apt-get install -y \
 RUN apt-get install -y \
     libwxgtk3.2-dev libwxgtk-media3.2-dev
 
-# ASTROBERRY dependencies
+# Astroberry dependencies
 RUN apt-get install -y \
     libgpiod-dev libmosquitto-dev
+
+# Packaging python modules: astroberry-manager, pyindi-client, gpsdclient, yr_weather
+RUN apt-get install -y \
+    python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest
+
+# pyindi-client
+RUN apt-get install -y \
+    swig python3-dev libcfitsio-dev libnova-dev
+    # additionally installed at build time: libindi-dev indi-bin
 
 # Clean up
 RUN apt-get clean
