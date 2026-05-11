@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest python3-dev swig libcfitsio-dev libnova-dev \
+          apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest python3-dev swig libcfitsio-dev libnova-dev
           dpkg -i build/indi-bin_*_${{ matrix.architecture }}.deb build/libindi1_*_${{ matrix.architecture }}.deb build/libindi-data_*_all.deb build/libindi-dev_*_${{ matrix.architecture }}.deb
 
       - name: Get the sources of PyIndi Client
