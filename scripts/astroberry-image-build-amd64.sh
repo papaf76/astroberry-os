@@ -93,7 +93,7 @@ rm -rf /install.sh # AstroDMx leftover
 echo "NoDisplay=true" >> /usr/share/desktop-directories/astrodmx.directory # remove astrodmx from top level menu
 
 # Clean packages
-apt-get remove -y --purge modemmanager
+apt-get remove -y --purge modemmanager light-locker
 apt-get autoremove -y
 
 # Clean apt cache
