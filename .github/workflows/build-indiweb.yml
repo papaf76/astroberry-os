@@ -1,0 +1,37 @@
+name: Build INDI Web Manager
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ["debian-trixie"]
+        architecture: ["arm64", "amd64"]
+
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ matrix.distro }}-${{ matrix.architecture }}
+
+    steps:
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y python3 dh-python python3-setuptools pybuild-plugin-pyproject python3-pytest
+
+      - name: Get the sources of INDI Web Manager
+        uses: actions/checkout@v6
+        with:
+          repository: 'rkaczorek/indiwebmanager'
+          ref: astroberry
+          path: 'indiwebmanager'
+
+      - name: Build INDI Web Manager
+        run: |
+          rm -rf build/deb_indiwebmanager && mkdir -p build/deb_indiwebmanager && \
+          cp -r indiwebmanager/* build/deb_indiwebmanager/ && \
+          cd build/deb_indiwebmanager && \
+          fakeroot debian/rules binary
