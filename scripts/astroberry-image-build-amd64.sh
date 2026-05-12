@@ -215,3 +215,7 @@ xorriso -as mkisofs \
 
 # Cleanup
 rm -rf iso efiboot.img
+
+# Show the generated ISO file
+ls -al $ISOFILE
+
