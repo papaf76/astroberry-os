@@ -63,7 +63,7 @@ chroot $ROOTFS apt-get install -y --no-install-recommends linux-image-generic fi
 chroot $ROOTFS apt-get install -y curl gpg
 
 # Add support live booting and new installer
-chroot $ROOTFS apt-get install -y squashfs-tools live-boot live-config live-config-systemd
+chroot $ROOTFS apt-get install -y squashfs-tools live-boot live-config live-config-systemd zenity
 
 # Add Astroberry OS certificate
 curl -fsSL https://astroberry.io/debian/astroberry.asc | gpg --dearmor -o $ROOTFS/etc/apt/keyrings/astroberry.gpg
