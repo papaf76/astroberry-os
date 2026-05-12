@@ -61,7 +61,9 @@ chroot $ROOTFS apt-get install -y --no-install-recommends linux-image-generic fi
   shim-signed grub-efi-amd64-signed \
   intel-microcode va-driver-all haveged zstd cloud-init sudo console-setup
 chroot $ROOTFS apt-get install -y curl gpg
-chroot $ROOTFS apt-get clean
+
+# Add support live booting and new installer
+chroot $ROOTFS apt-get install -y squashfs-tools live-boot live-config live-config-systemd zenity
 
 # Add Astroberry OS certificate
 curl -fsSL https://astroberry.io/debian/astroberry.asc | gpg --dearmor -o $ROOTFS/etc/apt/keyrings/astroberry.gpg
@@ -135,6 +137,10 @@ chmod +x $ROOTFS/tmp/astroberry-os-cleanup.sh
 chroot $ROOTFS /bin/bash -c \
   "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install -yqq astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
 
+# Copy the installer and icon files to the image
+cp $WDIR/astroberry-installer.sh $ROOTFS/opt/
+cp $WDIR/astroberry-installer.desktop $ROOTFS/usr/share/applications/
+
 # Synchronize filesystem
 sync
 
@@ -143,60 +149,73 @@ for dir in proc sys dev/pts dev; do
     umount -l $ROOTFS/$dir
 done
 
-# Create archive
-OUTPUT_ARCHIVE="${ISOFILE%.iso}.tar.zst"
-tar --zstd -cf $OUTPUT_ARCHIVE -C $ROOTFS .
-
-############## ISO/Installer creation section ################
-ISOROOTFS="isorootfs"
-if [ ! -e $ISOROOTFS ]; then mkdir -p $ISOROOTFS; fi
-
-# Create the installer debootstrap image
-debootstrap --variant=minbase --include=e2fsprogs,fdisk,gdisk,parted,tar,gzip,udev,kmod,dosfstools,pv,zstd \
-  trixie $ISOROOTFS http://deb.debian.org/debian/
-
-# Install the kernel
-chroot $ISOROOTFS apt-get update
-chroot $ISOROOTFS apt-get install -y --no-install-recommends linux-image-generic
-chroot $ISOROOTFS apt-get clean
-
-# Copying the init script into the chroot
-cp -v $WDIR/iso-installer-amd64/init.sh $ISOROOTFS/init
-chmod +x $ISOROOTFS/init
-
-# Copying the installer scripts
-mkdir -p iso/installer
-cp -v $WDIR/iso-installer-amd64/deploy.sh iso/installer/
-chmod +x iso/installer/deploy.sh
-cp -v $OUTPUT_ARCHIVE iso/installer/
-
-# Creating and populating the grub ISO structure
-mkdir -p iso/boot/grub
-KERNEL=$(ls $ISOROOTFS/boot/vmlinuz-*)
-cp -v $KERNEL iso/boot/vmlinuz
-(cd $ISOROOTFS && find . | cpio -H newc -o | gzip > ../iso/boot/initrd.img)
-cp -v $WDIR/iso-installer-amd64/grub.cfg iso/boot/grub
-
-# Secure boot support
+# Create the iso structure
+[ -e iso ] && rm -rf iso
 mkdir -p iso/EFI/BOOT
-cp iso/boot/grub/grub.cfg iso/EFI/BOOT/grub.cfg
-cp iso/boot/grub/grub.cfg iso/grub.cfg
-cp /usr/lib/shim/shimx64.efi.signed iso/EFI/BOOT/BOOTX64.EFI
-cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed iso/EFI/BOOT/grubx64.efi
-cp /usr/lib/shim/mmx64.efi iso/EFI/BOOT/
-if [ -e efiboot.img ]; then rm -rf efiboot.img; fi
-truncate -s 8M efiboot.img
-mkfs.vfat -F12 -n "EFI_BOOT" efiboot.img
-mmd -i efiboot.img ::/EFI
-mmd -i efiboot.img ::/EFI/BOOT
-mcopy -i efiboot.img iso/EFI/BOOT/* ::/EFI/BOOT/
-mcopy -i efiboot.img iso/boot/grub/grub.cfg ::/grub.cfg
+mkdir -p iso/boot/grub/i386-pc
+mkdir -p iso/live
 
-# Actual ISO file creation
-xorriso -as mkisofs -r -V astroberrycd -o $ISOFILE \
-  -J -joliet-long -no-emul-boot -e efiboot.img \
-  -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
-  iso efiboot.img
+# Create the squashfs image with xz compression
+mksquashfs $ROOTFS iso/live/filesystem.squashfs -comp xz
 
-# Showing the end ISO file
+# Copy the kernel and initrd from the chroot to the iso
+KERNEL=$(ls $ROOTFS/boot/vmlinuz-*)
+cp -v $KERNEL iso/live/vmlinuz
+INITRD=$(ls $ROOTFS/boot/initrd.img-*)
+cp -v $INITRD iso/live/initrd
+
+# Copy the shim and grub bootloader to the iso
+cp $ROOTFS/usr/lib/shim/shimx64.efi.signed iso/EFI/BOOT/BOOTX64.efi
+cp $ROOTFS/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed iso/EFI/BOOT/grubx64.efi
+
+# Create the grub configuration for the iso
+cat << EOF > iso/EFI/BOOT/grub.cfg
+set default="0"
+set timeout=5
+
+insmod part_gpt
+insmod part_msdos
+insmod all_video
+
+menuentry "Astroberry Live" {
+    search --set=root --file /live/filesystem.squashfs
+    linux /live/vmlinuz boot=live components quiet splash noeject noautologin
+    initrd /live/initrd
+}
+EOF
+
+# Create the EFI boot image
+truncate -s 10M efiboot.img
+mkfs.vfat efiboot.img
+mmd -i efiboot.img ::/EFI ::/EFI/BOOT
+mcopy -i efiboot.img iso/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT/
+mcopy -i efiboot.img iso/EFI/BOOT/grubx64.efi ::/EFI/BOOT/
+
+# Create the el-torito image for legacy BIOS booting
+grub-mkimage -O i386-pc-eltorito \
+    -o iso/boot/grub/i386-pc/eltorito.img \
+    -p /boot/grub \
+    biosdisk iso9660 search test ls normal cat echo halt reboot
+
+# Create the final ISO image
+xorriso -as mkisofs \
+    -iso-level 3 -rock -joliet \
+    -volid "ASTROBERRY" \
+    -partition_offset 16 \
+    -append_partition 2 0xef efiboot.img \
+    -appended_part_as_gpt \
+    -c boot.catalog \
+    -b boot/grub/i386-pc/eltorito.img \
+      -no-emul-boot -boot-load-size 4 -boot-info-table \
+    -eltorito-alt-boot \
+    -e '--interval:appended_partition_2:all::' \
+      -no-emul-boot \
+    -o $ISOFILE \
+    iso/
+
+# Cleanup
+rm -rf iso efiboot.img
+
+# Show the generated ISO file
 ls -al $ISOFILE
+

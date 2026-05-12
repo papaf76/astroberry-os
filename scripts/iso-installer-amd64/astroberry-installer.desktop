@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=Astroberry OS Installer
+Comment=Install Astroberry OS to your hard drive
+Exec=/opt/astroberry-installer.sh
+Icon=/usr/share/astroberry-artwork/icons/astroberry-icon-white.svg
+Categories=System;Settings;
+Keywords=install;system;astroberry;
