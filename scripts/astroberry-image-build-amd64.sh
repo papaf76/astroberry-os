@@ -168,7 +168,7 @@ INITRD=$(ls $ROOTFS/boot/initrd.img-*)
 cp -v $INITRD iso/live/initrd
 
 # Copy the shim and grub bootloader to the iso
-cp $ROOTFS/usr/lib/shim/shimx64.efi.signed iso/EFI/BOOT/BOOTX64.efi
+cp $ROOTFS/usr/lib/shim/shimx64.efi.signed iso/EFI/BOOT/BOOTX64.EFI
 cp $ROOTFS/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed iso/EFI/BOOT/grubx64.efi
 
 # Create the grub configuration for the iso
