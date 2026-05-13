@@ -90,11 +90,7 @@ cat <<EOF > $ROOTFS/tmp/astroberry-os-cleanup.sh
 
 export DEBIAN_FRONTEND=noninteractive
 
-# Clean AstroDMx leftovers
-rm -rf /install.sh # AstroDMx leftover
-echo "NoDisplay=true" >> /usr/share/desktop-directories/astrodmx.directory # remove astrodmx from top level menu
-
-# Clean packages
+# Remove packages we don't need
 apt-get remove -y --purge modemmanager light-locker
 apt-get autoremove -y
 
@@ -135,7 +131,7 @@ chmod +x $ROOTFS/tmp/astroberry-os-cleanup.sh
 
 # Install Astroberry OS meta package
 chroot $ROOTFS /bin/bash -c \
-  "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install -yqq astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
+  "export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get -o Dpkg::Options::=\"--force-overwrite\" install -yqq astroberry-os-desktop && /tmp/astroberry-os-cleanup.sh"
 
 # Copy the installer and icon files to the image
 cp $WDIR/astroberry-installer.sh $ROOTFS/opt/
