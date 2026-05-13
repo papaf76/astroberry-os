@@ -58,7 +58,7 @@ mount --rbind /dev/pts $ROOTFS/dev/pts
 sed -i 's/main$/main contrib non-free-firmware non-free/' $ROOTFS/etc/apt/sources.list
 chroot $ROOTFS apt-get update
 chroot $ROOTFS apt-get install -y --no-install-recommends linux-image-generic firmware-linux-nonfree \
-  shim-signed grub-efi-amd64-signed \
+  shim-signed grub-efi-amd64-signed grub-efi-amd64 grub-pc-bin \
   intel-microcode va-driver-all haveged zstd cloud-init sudo console-setup
 chroot $ROOTFS apt-get install -y curl gpg
 
@@ -141,6 +141,14 @@ cp $WDIR/astroberry-installer.desktop $ROOTFS/usr/share/applications/
 cp $WDIR/astroberry-installer.sh $ROOTFS/opt/
 cp $WDIR/astroberry-installer.desktop $ROOTFS/usr/share/applications/
 
+# Create the default grub configuration
+cat <<EOF > $ROOTFS/etc/default/grub
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=5
+GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 biosdevname=0"
+GRUB_CMDLINE_LINUX=""
+EOF
+
 # Synchronize filesystem
 sync
 
@@ -179,7 +187,7 @@ insmod all_video
 
 menuentry "Astroberry Live" {
     search --set=root --file /live/filesystem.squashfs
-    linux /live/vmlinuz boot=live components quiet splash noeject noautologin
+    linux /live/vmlinuz boot=live components quiet splash noeject noautologin net.ifnames=0 biosdevname=0
     initrd /live/initrd
 }
 EOF
