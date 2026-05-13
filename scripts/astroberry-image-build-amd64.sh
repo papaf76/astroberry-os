@@ -141,13 +141,8 @@ cp $WDIR/astroberry-installer.desktop $ROOTFS/usr/share/applications/
 cp $WDIR/astroberry-installer.sh $ROOTFS/opt/
 cp $WDIR/astroberry-installer.desktop $ROOTFS/usr/share/applications/
 
-# Create the default grub configuration
-cat <<EOF > $ROOTFS/etc/default/grub
-GRUB_DEFAULT=0
-GRUB_TIMEOUT=5
-GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 biosdevname=0"
-GRUB_CMDLINE_LINUX=""
-EOF
+# Change the default grub configuration for old nic names
+sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/c\GRUB_CMDLINE_LINUX_DEFAULT="quiet net.ifnames=0 biosdevname=0"' $ROOTFS/etc/default/grub
 
 # Synchronize filesystem
 sync
