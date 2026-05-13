@@ -83,7 +83,7 @@ sudo chroot /mnt/target /bin/bash -c "
 
 # Unmounting and finalizing
 echo "95" ; echo "# Unmounting and finalizing..."
-if [[ $BOOT_MODE == "uefi" ]]; then
+if [ $BOOT_MODE == "uefi" ]; then
     sudo umount /mnt/target/sys/firmware/efi/efivars
 fi
 sudo umount /mnt/target/dev /mnt/target/proc /mnt/target/sys
